@@ -72,6 +72,23 @@ router.get('/blog-posts/:id', (req, res) => {
 		}))
 })
 
+// UPDATE
+
+router.put('/blog-posts/:id', upload.single('image'), (req,res) => {
+	const id = req.params.id
+	const conditions = {_id : id}
+	const blogPost = {...req.body, image: lastUploadedImageName}
+	const update = { $set: blogPost}
+	const options = {
+		upsert: true,
+		new: true
+	}
+	Blogpost.findOneAndUpdate(conditions, update, options, (err, response) => {
+		if(err) return res.status(500).json({msg: 'update failed', error:err})
+		res.status(200).json({msg: `Document with id ${id} is updated !` , response: response})
+	})
+})
+
 // DELETE
 router.delete('/blog-posts/:id', (req, res) => {
 	const id = req.params.id
